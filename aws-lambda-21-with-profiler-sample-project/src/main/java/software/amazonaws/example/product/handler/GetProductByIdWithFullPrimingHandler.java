@@ -3,6 +3,7 @@
 
 package software.amazonaws.example.product.handler;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.crac.Core;
@@ -19,20 +20,22 @@ import software.amazonaws.example.product.dao.DynamoProductDao;
 import software.amazonaws.example.product.dao.ProductDao;
 import software.amazonaws.example.product.entity.Product;
 
-public class GetProductByIdWithPrimingHandler implements 
+public class GetProductByIdWithFullPrimingHandler implements 
                  RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>, Resource {
 
 	private static final ProductDao productDao = new DynamoProductDao();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	
 	
-	public GetProductByIdWithPrimingHandler () {
+	public GetProductByIdWithFullPrimingHandler () {
 		Core.getGlobalContext().register(this);
 	}
 	
 	@Override
 	public void beforeCheckpoint(org.crac.Context<? extends Resource> context) throws Exception {
-		productDao.getProduct("0");
+		APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+		requestEvent.setPathParameters(Map.of("id","0"));
+		this.handleRequest(requestEvent, new MockLambdaContext());
     }
 
 	@Override
@@ -44,14 +47,13 @@ public class GetProductByIdWithPrimingHandler implements
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
 		String id = requestEvent.getPathParameters().get("id");
 		Optional<Product> optionalProduct = productDao.getProduct(id);
-
 		try {
 			if (optionalProduct.isEmpty()) {
 				context.getLogger().log(" product with id " + id + " not found ");
 				return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.NOT_FOUND)
 						.withBody("Product with id = " + id + " not found");
 			}
-			context.getLogger().log(" product " + optionalProduct.get() + " not found ");
+			context.getLogger().log(" product " + optionalProduct.get() + " found ");
 			return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.OK)
 					.withBody(objectMapper.writeValueAsString(optionalProduct.get()));
 		} catch (Exception je) {

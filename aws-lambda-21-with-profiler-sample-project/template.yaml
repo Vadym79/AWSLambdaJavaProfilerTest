@@ -95,7 +95,7 @@ Resources:
   GetProductByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: GetProductByIdWithPureJava21LambdaWithProfilerLayer
+      FunctionName: GetProductByIdWithJava21WithProfilerLayer
       AutoPublishAlias: liveVersion
       Layers:
         - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:aws-lambda-java-profiler-layer:15
@@ -121,14 +121,14 @@ Resources:
       RetentionInDays: 7
 
 
-  GetProductByIdWithPrimingFunction:
+  GetProductByIdWithDynamoDBPrimingFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: GetProductByIdWithPureJava21LambdaAndPrimingProfilerAllLayer
+      FunctionName:  GetProductByIdWithJava21AndDynamoDBPrimingWithProfilerLayer
       AutoPublishAlias: liveVersion
       Layers:
         - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:aws-lambda-java-profiler-layer:15
-      Handler: software.amazonaws.example.product.handler.GetProductByIdWithPrimingHandler::handleRequest
+      Handler: software.amazonaws.example.product.handler.GetProductByIdWithDynamoDBPrimingHandler::handleRequest
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref ProductsTable
@@ -139,21 +139,50 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref MyApi
-            Path: /productsWithPriming/{id}
+            Path: /productsWithDynamoDBPriming/{id}
             Method: get     
             
             
-  GetProductByIdWithPrimingFunctionLogGroup:
+  GetProductByIdWithDynamoDBPrimingFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${GetProductByIdWithPrimingFunction}"
+      LogGroupName: !Sub "/aws/lambda/${GetProductByIdWithDynamoDBPrimingFunction}"
+      RetentionInDays: 7
+
+
+  GetProductByIdWithFullPrimingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GetProductByIdWithJava21AndFullPrimingWithProfilerLayer
+      AutoPublishAlias: liveVersion
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:aws-lambda-java-profiler-layer:15
+      Handler: software.amazonaws.example.product.handler.GetProductByIdWithFullPrimingHandler::handleRequest
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ProductsTable
+        - S3FullAccessPolicy:
+            BucketName: aws-pure-java21-lambda-with-profiler-bucket   
+      Events:
+        GetRequestById:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /productsWithFullPriming/{id}
+            Method: get     
+            
+            
+  GetProductByIdWithFullPrimingFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${GetProductByIdWithFullPrimingFunction}"
       RetentionInDays: 7
 
  
   PutProductFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: PutProductWithPureJava21WithProfilerLayer
+      FunctionName: PutProductWithJava21WithProfilerLayer
       AutoPublishAlias: liveVersion 
       Layers:
         - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:aws-lambda-java-profiler-layer:15

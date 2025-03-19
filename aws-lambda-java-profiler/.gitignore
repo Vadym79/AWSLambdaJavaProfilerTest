@@ -1,0 +1,7 @@
+/.idea/
+/target/
+/.mvn
+/docs
+/examples/
+/extension
+/integration_tests

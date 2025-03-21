@@ -16,6 +16,7 @@
 		<versions-maven-plugin.version>2.2</versions-maven-plugin.version>
 		<maven-shade-plugin.version>2.4.3</maven-shade-plugin.version>
 		<aws.lambda.java.core.version>1.2.3</aws.lambda.java.core.version>
+		<log4j.version>2.24.3</log4j.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -57,19 +58,31 @@
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>apache-client</artifactId>
 		</dependency>
-
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>2.1.0-alpha1</version>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-lambda-java-runtime-interface-client</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-lambda-java-log4j2</artifactId>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
 			<version>2.18.2</version>
 		</dependency>
-
-
 	</dependencies>
 
 	<dependencyManagement>

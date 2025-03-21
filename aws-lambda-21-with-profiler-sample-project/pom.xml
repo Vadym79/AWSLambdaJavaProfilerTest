@@ -60,8 +60,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-lambda-java-runtime-interface-client</artifactId>
-			<version>2.6.0</version>
+			<artifactId>aws-lambda-java-serialization</artifactId>
+			<version>1.1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

@@ -13,6 +13,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.services.lambda.runtime.serialization.events.LambdaEventSerializers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import software.amazon.awssdk.http.HttpStatusCode;
@@ -33,11 +34,47 @@ public class GetProductByIdWithFullPrimingHandler implements
 	
 	@Override
 	public void beforeCheckpoint(org.crac.Context<? extends Resource> context) throws Exception {
+		/*
 		APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
 		requestEvent.setPathParameters(Map.of("id","0"));
+		*/
+		//APIGatewayProxyRequestEvent requestEvent = LambdaEventSerializers.serializerFor(APIGatewayProxyRequestEvent.class, ClassLoader.getSystemClassLoader())
+		//.fromJson(getAPIGatewayRequestMultiLine());
+	    
+		APIGatewayProxyRequestEvent requestEvent = LambdaEventSerializers.serializerFor(APIGatewayProxyRequestEvent.class, ClassLoader.getSystemClassLoader())
+				.fromJson(objectMapper.writeValueAsString(getAwsProxyRequest()));
 		this.handleRequest(requestEvent, new MockLambdaContext());
     }
 
+	@SuppressWarnings("unused")
+	private static String getAPIGatewayRequestMultiLine () {
+		 return  """
+		 		{
+		          "httpMethod": "GET",
+		          "pathParameters": {
+		                "id": "0" 
+		            }
+		        }
+	     """;
+	}
+	
+    private static APIGatewayProxyRequestEvent getAwsProxyRequest () {
+    	final APIGatewayProxyRequestEvent aPIGatewayProxyRequestEvent = new APIGatewayProxyRequestEvent ();
+    	aPIGatewayProxyRequestEvent.setHttpMethod("GET");
+    	aPIGatewayProxyRequestEvent.setPathParameters(Map.of("id","0"));
+        /*
+    	aPIGatewayProxyRequestEvent.setPath("/products/0");
+    	aPIGatewayProxyRequestEvent.setResource("/products/{id}");
+    
+    	final ProxyRequestContext proxyRequestContext = new ProxyRequestContext();
+    	final RequestIdentity requestIdentity= new RequestIdentity();
+    	requestIdentity.setApiKey("blabla");
+    	proxyRequestContext.setIdentity(requestIdentity);
+    	aPIGatewayProxyRequestEvent.setRequestContext(proxyRequestContext);
+    	*/
+    	return aPIGatewayProxyRequestEvent;		
+    }
+	
 	@Override
 	public void afterRestore(org.crac.Context<? extends Resource> context) throws Exception {	
 	
@@ -62,5 +99,4 @@ public class GetProductByIdWithFullPrimingHandler implements
 					.withBody("Internal Server Error :: " + je.getMessage());
 		}
 	}
-
 }

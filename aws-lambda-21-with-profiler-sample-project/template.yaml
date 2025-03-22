@@ -103,7 +103,7 @@ Resources:
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref ProductsTable
-        - S3FullAccessPolicy:
+        - S3WritePolicy:
             BucketName: aws-pure-java21-lambda-with-profiler-bucket   
       Events:
         GetRequestById:
@@ -132,7 +132,7 @@ Resources:
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref ProductsTable
-        - S3FullAccessPolicy:
+        - S3WritePolicy:
             BucketName: aws-pure-java21-lambda-with-profiler-bucket   
       Events:
         GetRequestById:
@@ -161,7 +161,7 @@ Resources:
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref ProductsTable
-        - S3FullAccessPolicy:
+        - S3WritePolicy:
             BucketName: aws-pure-java21-lambda-with-profiler-bucket   
       Events:
         GetRequestById:
@@ -190,7 +190,7 @@ Resources:
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref ProductsTable
-        - S3FullAccessPolicy:
+        - S3WritePolicy:
             BucketName: aws-pure-java21-lambda-with-profiler-bucket   
       Events:
         GetRequestById:
@@ -219,7 +219,7 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ProductsTable
-        - S3FullAccessPolicy:
+        - S3WritePolicy:
             BucketName: aws-pure-java21-lambda-with-profiler-bucket   
       Events:
         PutRequest:

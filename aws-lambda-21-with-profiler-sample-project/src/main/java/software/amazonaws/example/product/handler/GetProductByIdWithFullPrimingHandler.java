@@ -8,6 +8,8 @@ import java.util.Optional;
 
 import org.crac.Core;
 import org.crac.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -25,8 +27,8 @@ public class GetProductByIdWithFullPrimingHandler implements
                  RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>, Resource {
 
 	private static final ProductDao productDao = new DynamoProductDao();
-	private final ObjectMapper objectMapper = new ObjectMapper();
-	
+	private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Logger logger = LoggerFactory.getLogger(GetProductByIdWithFullPrimingHandler.class);
 	
 	public GetProductByIdWithFullPrimingHandler () {
 		Core.getGlobalContext().register(this);
@@ -34,6 +36,7 @@ public class GetProductByIdWithFullPrimingHandler implements
 	
 	@Override
 	public void beforeCheckpoint(org.crac.Context<? extends Resource> context) throws Exception {
+		logger.info("entered beforeCheckpoint");
 		/*
 		APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
 		requestEvent.setPathParameters(Map.of("id","0"));
@@ -42,7 +45,8 @@ public class GetProductByIdWithFullPrimingHandler implements
 		//.fromJson(getAPIGatewayRequestMultiLine());
 	    
 		APIGatewayProxyRequestEvent requestEvent = LambdaEventSerializers.serializerFor(APIGatewayProxyRequestEvent.class, ClassLoader.getSystemClassLoader())
-				.fromJson(objectMapper.writeValueAsString(getAwsProxyRequest()));
+				.fromJson(getAPIGatewayProxyRequestEventAsJson());
+		logger.info("req event: "+requestEvent);	
 		this.handleRequest(requestEvent, new MockLambdaContext());
     }
 
@@ -58,21 +62,22 @@ public class GetProductByIdWithFullPrimingHandler implements
 	     """;
 	}
 	
-    private static APIGatewayProxyRequestEvent getAwsProxyRequest () {
-    	final APIGatewayProxyRequestEvent aPIGatewayProxyRequestEvent = new APIGatewayProxyRequestEvent ();
-    	aPIGatewayProxyRequestEvent.setHttpMethod("GET");
-    	aPIGatewayProxyRequestEvent.setPathParameters(Map.of("id","0"));
-        /*
-    	aPIGatewayProxyRequestEvent.setPath("/products/0");
-    	aPIGatewayProxyRequestEvent.setResource("/products/{id}");
+    private static String getAPIGatewayProxyRequestEventAsJson() throws Exception{
+    	final APIGatewayProxyRequestEvent proxyRequestEvent = new APIGatewayProxyRequestEvent ();
+    	proxyRequestEvent.setHttpMethod("GET");
+    	proxyRequestEvent.setPathParameters(Map.of("id","0"));
+        
+    	/*
+    	proxyRequestEvent.setPath("/products/0");
+    	proxyRequestEvent.setResource("/products/{id}");
     
     	final ProxyRequestContext proxyRequestContext = new ProxyRequestContext();
     	final RequestIdentity requestIdentity= new RequestIdentity();
     	requestIdentity.setApiKey("blabla");
     	proxyRequestContext.setIdentity(requestIdentity);
-    	aPIGatewayProxyRequestEvent.setRequestContext(proxyRequestContext);
+    	proxyRequestEvent.setRequestContext(proxyRequestContext);
     	*/
-    	return aPIGatewayProxyRequestEvent;		
+    	return objectMapper.writeValueAsString(proxyRequestEvent);		
     }
 	
 	@Override
